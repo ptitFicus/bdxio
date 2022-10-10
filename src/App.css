@@ -1,0 +1,29 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.butters {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.butters legend {
+  font-weight: 600;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form input[type="submit"] {
+  max-width: 75px;
+  align-self: flex-end;
+}
+
+form > * {
+  margin: 8px;
+}
