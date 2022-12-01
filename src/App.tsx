@@ -31,15 +31,113 @@ type ButterEvent =
   | { type: "butterSelected"; butter: ButterType };
 
 const butterMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QCMCuAXdYBOA6AbgIYA2AlhAMSyrIC2p6A2gAwC6ioADgPawOncAdhxAAPRABZmATlwBGAKwBmAEzSFUgBxzNAdk0AaEAE9EuiRNwqF6hYt3S5ANjkSAvm6NpMOXNToM6KSCUBQQQmC4wfjcANaR3lh4-vSYwVAI0dwAxoRBQiyshSI8fPnCSGKICi64CjUSSprMMhLmCkamCLr1uErSTg5qDU41Hl4YSX40qUEhFDjY3HicxHkAZsu0uIm+KYHpmYIxueWFxZWl-EIi4ghKunK4mv1yuk4y1nJKEp2I6ko+nZpEoHk5pNYJCpxiBdnhFssKKJYOg8pFCOskgAKBQtZgASgocNwCOwFy4vGuFVAdxUqismgk3xeFgkCm0vxM1ScmjqPxsrikChUKncnlhk18xG4hAg6QAImBOIRsFhaGBBOhYGEIlFjnEEpK8NLZQqlSq1RqtUcTnkBIJzmwSpTyrdEEo5Mx5FJmKMIZoaho-ggVLoVLgHE0Wjy2jInDDiXCAMpgYhgbLlHWCSIotE7I35nzYFNpjP28kgK6uyp3JxSZ6OZS6JQ2ZtQ4NOUa4aRSMPKEGelsJgvJ1Pp8p6zbYWh2oS4dDYQiCPhWigVqv2t0IaTSXlgkWaD5OUVtYNKZi8x4fJmadR1x7DouFpIl8f2ydbWeCeeL5ekVeMHI7CXC6m41ognrfFYujMD0u41CeujBm0lg-I0DwOFoEjxuKiZGq+ZZzsEU4zhOcqwKshDGJAFDEZ+5QAMLSrAkDrqBNzgQgchyCCuDgtIuhweCwpOMhii4C06gvMwNQPDouiPlMo6lhOxJgLQnDoMYRL4WOGasU6IFlGBNL-HoVgehI2iHkyqhKMGMFeu8EgQiogxqNxYoTE+EDmqq6lWrAAAyMq+ZQvnKv56qagRWAQGxxkcaZCA1LIAmdioLzCR6Z4QhJoLMCoMmyY8egeOKgjcL58CVHCzqJdSVRcYyDK2SyFjsq4Z6Xs4zA3nesbqIpvhEGQED1VSW6NOG2j6M0cgiqGPT2VyCCjLouDYT2zA8TIwpucNyQzAcIQTdWyVgnUF7vMKPzMHZHSrZoop9C0mgvNIsEwRoh3TAEPjjUZk2cU4DxWAJ+iOEo4I5U9Cgbdh70WC2DyFb9pJnSZTV0rIs2Cdofqg52DnqM8MEgmoLh0kyv0mnKISKpFlqajVFINVu55PKG8O7tDg5IatihPA4jLHmyMj3Qtv3KW+SWVuxjV3M0Ch1FCeISy4AnBgtG1Xn1OgDQ+uEjrpKnvnR05fpjctK8oqtFXin2awLXQqM4Ea9f1DRG95Smm7L34W6R74LkuK6atbiv-Dt9vq07PEu5IRWbaDHqMrBIKNApxtPjLhGB4IJFfrg5GUdRgNs8DyULcn+gyZC2iIWeMke9eBve3I0v+-nH6WxOAAW5C+Y1G42xBbuyIJb2i+obnITBzzIxh22i13Raxe+dVA+dTV6LyoYycjdbfHSHbcRGdaue5jiuGvL56apBbqZpXSVzvdwQk40GH40x92cGs0+jWAFC4Z6OM744A3nOPCRYABqJByCRy3J6cyKFPT3Ssi2HkAD3bPXqI4UBIp+i-QihaAKLMQqykgEgzid0+JDHWvDTs4JORdB9M8N4FNOzw0RtnDwQA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QCMCuAXdYBOA6ANgPYCGEAlgHZQAiYADsdlgLZgXqwDEEhFYulAG6EA1vzSYcBEuSq0GTMK3awEQwgGNi6MrwDaABgC6ho4lB1CsMjt7mQAD0QBmAOy5Xn5wBY3AVgAaEABPRAAmMIA2XG8DAE4ARlc4yIAOVz8AX0ygiSw8CHpGFjYOABkZSG4ixWV0AGUwfDANLAhTe0trWwp7JwQ-ONwE5zDUhLDAkMRvWNxU7z9UyYS4v2cJrJyQPKld7Ebm1t0KTn3DlraOpBAumxO+xESY1LWDVfXNoNCESNdo9apSIpMZxAyRSbZXIYfK4QTEfBkCCcWCoZDMGzXCxWe52G79CYGXBxZzpMIGVwGDaTb5PAzeYl-SJ+EZ-BLpLbQyR4VHomw6KjcXj8dRiXD7XC8jGYShQNQUYRaHqmLG3HE9R4IOKpXD02J-UljL7TBAJVm4cnjMLa5ZWzk7GFSKX82WcHDYQh4Oj4bQAM09zHFjp5aOlArl6iVJxVxk66oe+JcYXcFPp6zB9LcnlpWriYQtzjSCUi+sh2wl7s9nAcsHQ2n4xF9+QAFM4DO2AJRnYO4SvYVV3DWJhA+BK4dPk5wZ3yeVw5kvODzOPzvPzAvwRZPZbYUQiFeA3fZx7oJ0D9AC0CSJm+ZEKmP3PkShDu50lIsvkxSUpQP2JPeLPGYwhzVJnGfCVCgUEoVAqUhIGPXFemHYFxzibw4kpSlqXvFxIjHQYDHJOIUnifxwJ7c4mkuU81X-JDAIQTwYlcDkMNvGkTSWMc8M8DDUhZNcyy5WF4URCAEKHBiJkXMI228NIMhApJdSWHwSJJDJyNfZ0ZSoCSaP6VIdWtbx2TQz4OJ+Yix1cEY3FecEhJfWEdLafSAMcRAJgZYjmWWKljR+CZrQ8NJUkIksxgiMDyx7Pt3PozyR0iRdlySKlpyzOcTVcbx3DzV4lleKLZO3TIgA */
   createMachine<ButterContext, ButterEvent>(
     {
       context: { butterType: undefined, departement: undefined },
       predictableActionArguments: true,
+      initial: "loadingDepartements",
+      states: {
+        loadingDepartements: {
+          invoke: {
+            src: "fetchDepartements",
+            onDone: [
+              {
+                target: "departementsLoaded",
+                actions: assign({ departements: (ctx, evt) => evt.data }),
+              },
+            ],
+          },
+        },
+        departementsLoaded: {
+          on: {
+            departementSelected: {
+              target: "butterSelection",
+              actions: assign({ departement: (ctx, evt) => evt.departement }),
+            },
+          },
+        },
+        butterSelection: {
+          on: {
+            butterSelected: {
+              target: "valid",
+              actions: assign({ butterType: (ctx, evt) => evt.butter }),
+            },
+          },
+        },
+        valid: {
+          on: {
+            submit: {
+              target: "submitting",
+            },
+          },
+        },
+        submitting: {
+          invoke: {
+            src: "submit",
+            onDone: [
+              {
+                target: "submitted",
+              },
+            ],
+            onError: [
+              {
+                target: "error",
+                actions: assign({ error: (ctx, evt) => evt.data.message }),
+              },
+            ],
+          },
+        },
+        submitted: {},
+        error: {
+          after: {
+            "3000": {
+              target: "#butter.butterSelection",
+              actions: [],
+              internal: false,
+            },
+          },
+        },
+      },
       id: "butter",
     },
     {
-      services: {},
+      services: {
+        fetchDepartements: () =>
+          fetch("/api/departements", {
+            headers: {
+              "x-delay": DELAY,
+            },
+          })
+            .then((resp) => resp.json())
+            .then((dpts) =>
+              dpts.sort(
+                (d1: Departement, d2: Departement) =>
+                  d1.numeroDepartement > d2.numeroDepartement
+              )
+            ),
+        submit: (context) => {
+          return fetch("/api/answers", {
+            method: "POST",
+            body: JSON.stringify({
+              departement: context.departement,
+              butter: context.butterType,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+              "x-delay": DELAY,
+            },
+          }).then((response) => {
+            if (response.status >= 400) {
+              return response.json().then((err) => {
+                throw new Error(err.message);
+              });
+            } else {
+              return {};
+            }
+          });
+        },
+      },
       guards: {},
     }
   );
@@ -144,9 +242,7 @@ function App() {
             </label>
           </fieldset>
         )}
-        {matches("valid") && (
-          <input type="submit" value="Submit" disabled={!matches("valid")} />
-        )}
+        {matches("valid") && <input type="submit" value="Submit" />}
 
         {matches("submitting") && (
           <div className="loader-container">
