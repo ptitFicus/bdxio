@@ -22,94 +22,22 @@ interface ButterContext {
   error?: string;
 }
 
+const DELAY = "500";
+
 type ButterEvent =
   | { type: "submit" }
-  | { type: "locationSelected"; departement: string }
+  | { type: "departementSelected"; departement: string }
   | { type: "informationClosed" }
   | { type: "butterSelected"; butter: ButterType };
 
 const butterMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QCMCuAXdYBOBiANgPYDGAhugJaEB2AymPmMVhANoAMAuoqAA6GwKlGjxAAPRAEZJAdhkA6AKwAmRZOUBmSe3YyAbBo0AaEAE9EymeyV7JKvZoAs7Q3scBfdybSYcBEuRUdAxMLKyS3Egg-ILC1KISCHZq8gCcuo6pjooayg52JuYIiiVphjIajsrqKop6nt4YWHg+zfSMzJAckXwCQkEJUtp68o4ykraaqTlqxmZSABwa8rKZenqpC5apch5eIK048hTUAG6k+BQQuBA0YPKw6OT3h9jHZxdX3aIx-SJRiTsMkUowWmx0blkqTmRWcI3YjnUlXYC0UVhR9X2r3e50uEHkRDIcQJhFIEBOUAAMgE4rAbnccYQANYvJpHE64q4kolBElkinUnk0WAIDk0oLdb5RX5xQYIPQuNILFEaaZVSpuQqIBwg9ipfV6GTKaaQ1INA5st4cz74wmBGjvABmhGwAFt7dQACIUWC8fCkUyQXAnZ1uj0AYSIsC6XB+fVlAKkxpG1RU1SyygWiK1xXYIKyLg0KjB6iWMnN2OtePk2PQ2FI1EEYGo6FwUt6sQGiYQFVSaRkWcUWQHyskjhzml1KhRW0RS1RGgrlpxNpry7rDabLbbETjnf+oESMkcy1k6x2RczuVSObHfbG6U2yoVbjkS98b0511gqGQrqE7bRPGXaHog6SSGkdSqkOWQ1DCiDKss9iQlUxrSHsjQfg8v7-pgFL0tQ9xiiya5YT+f5CJQ1BQKKZzijQkqxtKwEHuIiCOAsIzQlU2QOOsDjsHoOY7NY0yWOw0hDkOgnvs02EUXh1G4Dg2AuvIfrkKGrqkXJ5G4VRNFikK1CMT0QH7vE3ZosoozrOoqTVMCkiVDmSzWAYlTbHqCwyNCslHCpLq4GIjzPPIpCOs0AAUig6OwACUuDYoF2CATKIFsT2zlKEWRbpGMihLJIrmpCM-FVBUA7sMoyh7Ps1CEBAcCiK8e5-JZoEICeCxlDxdR5OsyiCTmAC00gKNOYLjM4GgIo4mKYXJVZXG1CadbFCjgksapOJq8wICNmZKENYJZqkdhjka-lWh81Z2mt5ntXKJT5sq22KOq83jvtRYQfojiIhxeiFcDkjXSud30dQfLktRgoevAzEWXKOryFmGjrJxkg7OdMg5rFCzg8ttpQ9yHoAILnBQ-rIIwiMdk93aovmmbGlmzhLBoeP7ajer6vNqqcQ5yhE7dXL3byIYuu6cTer6-qBhAq0ZYCY7wi43lqJkH3KDmAPWP9J4aKiIkGKLX5k8StyEcrrGAte8g6FU52WAYmT4xs8gbGObNWHYGzm6urVI4z616D10wY5xhhc4Yus89YD7aBJ1nAtVgfVrW9aNhQzboLbHWZbYXE5OHHmx7kE65I7k0uNZElmliy7EzpRwNQAQpaBdyrB8jAqVeoVGCJ43vtdg2UaFSIi9sXTITTdYS32KvO0oSQN33bndYlRVG4KLDPHRSaDZebVBJqjTxM4NfhvnXnSXs3SHPqbCYqWYYpIPkIgqYML7pOGUQpLfTKaI+zQkMM+Gq4lR5FCNCMBY2MtDA1qmCY04M9KUXXiHB6R5dB90qLIBYyo0S2G+kUaYfYcgIlOrYLWihwYpWAYkUhjsao7CWJMfQh8wJv2cOkDGbg8q-08EAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QCMCuAXdYBOA6AbgIYA2AlhAMSyrIC2p6A2gAwC6ioADgPawOncAdhxAAPRABZmATlwBGAKwBmAEzSFUgBxzNAdk0AaEAE9EuiRNwqF6hYt3S5ANjkSAvm6NpMOXNToM6KSCUBQQQmC4wfjcANaR3lh4-vSYwVAI0dwAxoRBQiyshSI8fPnCSGKICi64CjUSSprMMhLmCkamCLr1uErSTg5qDU41Hl4YSX40qUEhFDjY3HicxHkAZsu0uIm+KYHpmYIxueWFxZWl-EIi4ghKunK4mv1yuk4y1nJKEp2I6ko+nZpEoHk5pNYJCpxiBdnhFssKKJYOg8pFCOskgAKBQtZgASgocNwCOwFy4vGuFVAdxUqismgk3xeFgkCm0vxM1ScmjqPxsrikChUKncnlhk18xG4hAg6QAImBOIRsFhaGBBOhYGEIlFjnEEpK8NLZQqlSq1RqtUcTnkBIJzmwSpTyrdEEo5Mx5FJmKMIZoaho-ggVLoVLgHE0Wjy2jInDDiXCAMpgYhgbLlHWCSIotE7I35nzYFNpjP28kgK6uyp3JxSZ6OZS6JQ2ZtQ4NOUa4aRSMPKEGelsJgvJ1Pp8p6zbYWh2oS4dDYQiCPhWigVqv2t0IaTSXlgkWaD5OUVtYNKZi8x4fJmadR1x7DouFpIl8f2ydbWeCeeL5ekVeMHI7CXC6m41ognrfFYujMD0u41CeujBm0lg-I0DwOFoEjxuKiZGq+ZZzsEU4zhOcqwKshDGJAFDEZ+5QAMLSrAkDrqBNzgQgchyCCuDgtIuhweCwpOMhii4C06gvMwNQPDouiPlMo6lhOxJgLQnDoMYRL4WOGasU6IFlGBNL-HoVgehI2iHkyqhKMGMFeu8EgQiogxqNxYoTE+EDmqq6lWrAAAyMq+ZQvnKv56qagRWAQGxxkcaZCA1LIAmdioLzCR6Z4QhJoLMCoMmyY8egeOKgjcL58CVHCzqJdSVRcYyDK2SyFjsq4Z6Xs4zA3nesbqIpvhEGQED1VSW6NOG2j6M0cgiqGPT2VyCCjLouDYT2zA8TIwpucNyQzAcIQTdWyVgnUF7vMKPzMHZHSrZoop9C0mgvNIsEwRoh3TAEPjjUZk2cU4DxWAJ+iOEo4I5U9Cgbdh70WC2DyFb9pJnSZTV0rIs2Cdofqg52DnqM8MEgmoLh0kyv0mnKISKpFlqajVFINVu55PKG8O7tDg5IatihPA4jLHmyMj3Qtv3KW+SWVuxjV3M0Ch1FCeISy4AnBgtG1Xn1OgDQ+uEjrpKnvnR05fpjctK8oqtFXin2awLXQqM4Ea9f1DRG95Smm7L34W6R74LkuK6atbiv-Dt9vq07PEu5IRWbaDHqMrBIKNApxtPjLhGB4IJFfrg5GUdRgNs8DyULcn+gyZC2iIWeMke9eBve3I0v+-nH6WxOAAW5C+Y1G42xBbuyIJb2i+obnITBzzIxh22i13Raxe+dVA+dTV6LyoYycjdbfHSHbcRGdaue5jiuGvL56apBbqZpXSVzvdwQk40GH40x92cGs0+jWAFC4Z6OM744A3nOPCRYABqJByCRy3J6cyKFPT3Ssi2HkAD3bPXqI4UBIp+i-QihaAKLMQqykgEgzid0+JDHWvDTs4JORdB9M8N4FNOzw0RtnDwQA */
   createMachine<ButterContext, ButterEvent>(
     {
       context: { butterType: undefined, departement: undefined },
       predictableActionArguments: true,
-      on: {
-        locationSelected: [
-          {
-            target: ".invalid.location.informationDisplayed",
-            cond: "outsideBrittany",
-            actions: assign({ departement: (__, evt) => evt.departement }),
-          },
-          {
-            target: ".invalid.location.done",
-            actions: assign({ departement: (__, evt) => evt.departement }),
-          },
-        ],
-        butterSelected: {
-          target: ".invalid.butter.butterSelected",
-          actions: assign({ butterType: (__, evt) => evt.butter }),
-        },
-      },
-      initial: "invalid",
+      initial: "loadingDepartements",
       states: {
-        invalid: {
-          type: "parallel",
-          states: {
-            location: {
-              initial: "loadingLocations",
-              states: {
-                loadingLocations: {
-                  invoke: {
-                    src: "fetchLocations",
-                    onDone: [
-                      {
-                        target: "locationAvailables",
-                        actions: assign({
-                          departements: (ctx, evt) => evt.data,
-                        }),
-                      },
-                    ],
-                  },
-                },
-                locationAvailables: {},
-                informationDisplayed: {
-                  on: {
-                    informationClosed: {
-                      target: "done",
-                    },
-                  },
-                },
-                done: {
-                  type: "final",
-                },
-              },
-            },
-            butter: {
-              initial: "transient",
-              states: {
-                transient: {
-                  always: [
-                    {
-                      target: "butterSelected",
-                      cond: "butterPresent",
-                    },
-                    {
-                      target: "noButter",
-                    },
-                  ],
-                },
-                noButter: {},
-                butterSelected: {
-                  type: "final",
-                },
-              },
-            },
-          },
-          onDone: {
-            target: "valid",
-          },
-        },
         valid: {
           on: {
             submit: {
@@ -128,17 +56,89 @@ const butterMachine =
             onError: [
               {
                 target: "error",
+                actions: assign({ error: (ctx, evt) => evt.data.message }),
               },
             ],
           },
         },
-        submitted: {},
+        submitted: {
+          type: "final",
+        },
         error: {
           after: {
             "5000": {
-              target: "#butter.valid",
+              target: "#butter.butterSelection",
               actions: [],
               internal: false,
+            },
+          },
+        },
+        loadingDepartements: {
+          invoke: {
+            src: "fetchDepartements",
+            onDone: [
+              {
+                target: "departementsLoaded",
+                actions: assign({ departements: (__, evt) => evt.data }),
+              },
+            ],
+          },
+        },
+        butterSelection: {
+          type: "parallel",
+          states: {
+            information: {
+              initial: "transient",
+              states: {
+                transient: {
+                  always: [
+                    {
+                      target: "displayed",
+                      cond: "outsideBrittany",
+                    },
+                    {
+                      target: "hidden",
+                    },
+                  ],
+                },
+                displayed: {
+                  on: {
+                    informationClosed: {
+                      target: "hidden",
+                    },
+                  },
+                },
+                hidden: {
+                  type: "final",
+                },
+              },
+            },
+            butter: {
+              initial: "empty",
+              states: {
+                empty: {
+                  on: {
+                    butterSelected: {
+                      target: "butterValid",
+                      actions: assign({ butterType: (ctx, evt) => evt.butter }),
+                    },
+                  },
+                },
+                butterValid: {
+                  type: "final",
+                },
+              },
+            },
+          },
+          onDone: {
+            target: "valid",
+          },
+        },
+        departementsLoaded: {
+          on: {
+            departementSelected: {
+              target: "butterSelection",
+              actions: assign({ departement: (ctx, evt) => evt.departement }),
             },
           },
         },
@@ -147,8 +147,12 @@ const butterMachine =
     },
     {
       services: {
-        fetchLocations: () =>
-          fetch("/api/departements")
+        fetchDepartements: () =>
+          fetch("/api/departements", {
+            headers: {
+              "x-delay": DELAY,
+            },
+          })
             .then((resp) => resp.json())
             .then((dpts) =>
               dpts.sort(
@@ -157,14 +161,31 @@ const butterMachine =
               )
             ),
         submit: (context) => {
-          return Promise.resolve(1);
+          return fetch("/api/answers", {
+            method: "POST",
+            body: JSON.stringify({
+              departement: context.departement,
+              butter: context.butterType,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+              "x-delay": DELAY,
+            },
+          }).then((response) => {
+            if (response.status >= 400) {
+              return response.json().then((err) => {
+                throw new Error(err.message);
+              });
+            } else {
+              return {};
+            }
+          });
         },
       },
       guards: {
         outsideBrittany: (context) => {
           return !["22", "56", "35", "29"].includes(context.departement || "");
         },
-        butterPresent: (ctx) => Boolean(ctx.butterType),
       },
     }
   );
@@ -176,14 +197,21 @@ function App() {
 
   service.subscribe((state) => {
     if (
-      state.matches("invalid.location.informationDisplayed") &&
+      state.matches("butterSelection.information.displayed") &&
       !dialogRef.current?.open
     ) {
       dialogRef.current?.showModal();
     }
   });
 
+  console.log("context", context);
   console.log(JSON.stringify(value));
+  if (matches("submitted")) {
+    return <div>Thank you !</div>;
+  } else if (matches("loadingDepartements")) {
+    return <Loader />;
+  }
+
   return (
     <>
       <dialog ref={dialogRef}>
@@ -211,40 +239,16 @@ function App() {
           send("submit");
         }}
       >
-        <fieldset className="butters">
-          <legend>Favorite butter</legend>
-          <label className="radio-input">
-            <input
-              type="radio"
-              name="butter"
-              value="soft"
-              onChange={(e) =>
-                send({ type: "butterSelected", butter: ButterType.UNSALTED })
-              }
-            />
-            Beurre doux
-          </label>
-          <label className="radio-input">
-            <input
-              type="radio"
-              name="butter"
-              value="half-salted"
-              onChange={(e) =>
-                send({ type: "butterSelected", butter: ButterType.SEMI_SALTED })
-              }
-            />
-            Beurre demi-sel
-          </label>
-        </fieldset>
         <select
+          disabled={!matches("departementsLoaded")}
           onChange={(e) =>
-            send({ type: "locationSelected", departement: e.target.value })
+            send({ type: "departementSelected", departement: e.target.value })
           }
           defaultValue="default_value"
         >
           <>
             <option disabled value="default_value">
-              Select a city
+              Select your city
             </option>
             {context.departements &&
               context.departements.map((p) => (
@@ -254,13 +258,49 @@ function App() {
               ))}
           </>
         </select>
-        {matches("submitting") ? (
+        {context.departement && (
+          <fieldset className="butters" disabled={!matches("butterSelection")}>
+            <legend>Favorite butter</legend>
+            <label className="radio-input">
+              <input
+                checked={context.butterType === ButterType.UNSALTED}
+                type="radio"
+                name="butter"
+                value="soft"
+                onChange={(e) =>
+                  send({ type: "butterSelected", butter: ButterType.UNSALTED })
+                }
+              />
+              Beurre doux
+            </label>
+            <label className="radio-input">
+              <input
+                checked={context.butterType === ButterType.SEMI_SALTED}
+                type="radio"
+                name="butter"
+                value="half-salted"
+                onChange={(e) =>
+                  send({
+                    type: "butterSelected",
+                    butter: ButterType.SEMI_SALTED,
+                  })
+                }
+              />
+              Beurre demi-sel
+            </label>
+          </fieldset>
+        )}
+        {matches("valid") && (
+          <input type="submit" value="Submit" disabled={!matches("valid")} />
+        )}
+
+        {matches("submitting") && (
           <div className="loader-container">
             <Loader />
           </div>
-        ) : (
-          <input type="submit" value="Submit" disabled={!matches("valid")} />
         )}
+
+        {matches("error") && <div className="error">{context.error}</div>}
       </form>
     </>
   );
