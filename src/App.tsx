@@ -3,22 +3,29 @@ import reactLogo from "./assets/react.svg";
 import "./App.css";
 import { assign, createMachine } from "xstate";
 import { useMachine } from "@xstate/react";
+import { departements } from "./data";
 
 enum ButterType {
   UNSALTED = "UNSALTED",
   SEMI_SALTED = "SEMI_SALTED",
+  SALTED = "SALTED",
 }
 
-interface Departement {
+export interface Departement {
   numeroDepartement: string;
-  numeroRegion: number;
   nom: string;
 }
 
+interface Butter {
+  id: string;
+  name: string;
+}
+
 interface ButterContext {
-  departements?: Departement[];
+  departements: Departement[];
   departement?: string;
-  butterType?: ButterType;
+  butters: Butter[];
+  butterType?: string;
   error?: string;
 }
 
@@ -28,28 +35,21 @@ type ButterEvent =
   | { type: "submit" }
   | { type: "departementSelected"; departement: string }
   | { type: "informationClosed" }
-  | { type: "butterSelected"; butter: ButterType };
+  | { type: "butterSelected"; butter: string };
 
 const butterMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QCMCuAXdYBOA6ANgPYCGEAlgHZQAiYADsdlgLZgXqwDEEhFYulAG6EA1vzSYcBEuSq0GTMK3awEQwgGNi6MrwDaABgC6ho4lB1CsMjt7mQAD0QBmAOy5Xn5wBY3AVgAaEABPRAAmMIA2XG8DAE4ARlc4yIAOVz8AX0ygiSw8CHpGFjYOABkZSG4ixWV0AGUwfDANLAhTe0trWwp7JwQAWmcw1Nw-Az8UyITUyL8wn28g0IRnGdwE6ciwhMSk7z8-SOzcjHzcPJxG5tbdCguzqSU6dGDOS+xrlraOpBAumx3PqIAYjZwxPyuabeMLzTxxJYhRCQuK4KbxebeSKubyJE4gD64QTEfBkCCcWCoZDMGy-CxWQF2P79UEGcFRHFQ8ZhXEGRErBJhAzuHFzVJCtaw-GEynUmw6KjcXj8dRiB6SPCymmYShQNQUYRaHqmOn-Bk9YEIOKjCYGMJxe1pDLLRAJBJ+by4VJ+GYGSKRWLbLI5AmPTVU7UKqCcHDYQh4Oj4bQAM3jzHV5y18t1+sN2juJuMnXNQOZLjC7mFfL8zjiBj5bk8LqtDtwCzSm0DUpDhNj8c4Dlg6G0-GIyfyAApnPWDABKd5h3B97CmgEWsurbwJMa1iV1hueVzNgPg1zOcbuyJxeYRVzSxcfL63XgCCip7DMfMv9DYYgUaylJwq4lkyoAsv4XqpPEnipFuCQ+O6zapHWHjeKk8FHIc9apPeGoZlcTTfHcr7vp+PS4D+f4AewQEJGYfxrqWYEgs4-obGe8RCtaCL+oESJWuhGzxO6sx8hEaS4ecj6Ec+9yUKRX73OQsCJsQwRVPJaaKQAwkQsCQMB3RMY4IIJFuYy+tsUFCq4mx8SsexehWGQIWs1oJJJUjSTcPRKnwuBDiO+F4N5RH6EWDEgb0G4DAcowVluiTpDyPphM2bqzGMPpxMkNYRIKzjZCGFCEIU8B-B8xZGaBJmDHMBgbAGiTOM4qRQZxzYDH4aJxL11pbuhrizAlnl4EQpC6vIxRKKU5X0tV0XMQgMJIYVPaLoUCglCoFSkJAVWMottU4rg2wHG6tnpLiOXNj4DWtehsFwTihzHOteGhbJB3rktAyRHajW4vBD31g6zaxOC6LWi1wz2uko1EiSZLfcZ4ETLgbizLsqStZMHr2a6QrRL1YoSoKwanHhWY6lQKM1Sy3pjDlFbcrMrVpOlMzgripNsuTCPU20dNHf0gqeiTfjinzsLpREqJQm1doBiMERrZT5zLsLlqseC55JGy+6+IezacmiIzXm1DrigsCOfeRlWRQtlpdZsaJocrBiwehwrg4kaL+vE2LIdxFOhh9YZPvbi7PK8WsxViowIrMMKe2hCQ+-xkSsWM7XeJ4GKh4SdvEYSPB8HHv042MvjTlCgrut4-KIP9YQbA6cyeFiOJ4u9UkRzJ5GaR+ikV7VXUeoDzUgx1-Fcl6kLQmztbnrb-c+cRQ9kcRlH-mQpSjyy4zRJ2U+K8JBNWr4aIZLsdaJHfHm915a9hXJb5aeRAAWZKFEdjH06ZP0Xo-Q+lxOMcYiQL7pyAfWYYZkIjDSGqvDUkcN7v2HuRZSql1IQAPqZLEGxYTek9mfSBSEazzzru7FqcQV5FSAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QCMCuAXdYBOA6AdgPYAiYADgIbZYC2Y+6AxBOVbfegMpgA2YAxlggBtAAwBdRKDKFYAS3RzC+KSAAeiALQAWAEy7c2gOwA2IwA4AnKN0BWAIzaH2gDQgAnonsnRuW7otzE0sjUSNtewBmWwBfGLc0TBxcRKxsbj5BJXxmZTBcWHQKLBSMNNKk9N4BRWUxSSQQGXlalUaNBB1bc1wAiMt7cyNdJ3tdN08Ee0GTPwcQy1tI-THIuISy5NScDJrsivKiACFNqsyhRm2zmsh61WaFbNUOzV0THttLZYjI4YGgiaIHyzAb2IyRSKibSWIb+dYgK4HHbVLLKJF4HiECgQOT4KAnSq5fD5XEAN0IAGt8oirrtUfh0bhMdjcfjTggyYR+MVsvU7o0Hq1nlpbKJ7LhptobJZdNFptMTICELYTAZomLBhDwtYTPCaac6a1cLiAGaEbA0Hlo9DYCj4eQcRj86SyR7KYWdX6zbROEyfKzhUz2JUDIy4VUjUYmKKWbR607ow37U3my1Gm12h0MJ32BoulpPdpaSImWbgowViK2fzmAEeLyiMK4GGRbTvaaiaO6czxyqJlFGlMWq0MnGwMg8CjuSCMIdp7IAYUxsFuEnurqFRc6jgMonMfW05m6P0V9YQXx6oV0nd0A0W5givfKpIoPDkEEYsFQyBoCmdTQ3QtQBea9Il6MxjD9GxoShJUxibcI-X3URIjGWJ4gRBMvx-BRFDxIkSXwckqUZbDf0wVkOSIrkRz5NcBUA90twcCUfRCXR7EWL5S0iODb0sXBwmWSErAGVsn2SMjcNZRgcGwc1cAnYozQtUjv3IvCoCo8luVaOi8wAgsmOArwvlwSETDbWVPk4oxLCVIIeh+ewoRcuw-UsCS8Dk81GDUQpinyCgTTSAAKSFGwASkuBMfOwf9BSA9REGvMMK38VYbIWJV5mbaZIQhAYliCOIMKIFh4EaK51yMtoTM6UtbEEuzo3MCEgjMcwlSMcV-ECSyfTCWw2y8ggSFYagwDoBgardOrkoasFmssVr2tLCw4KGXA2s+bpVWGYILFG2kBySxLjIWzQfAMP5dp9bQ5XGM8+kEw9gh9fRzFc46DVOtFqoY2qPU0YaBMlaVrPlJ7JhLMDwiGMFbMiEJ7B+yok3+hNjl+85IFmzd6p0WtwwOkYuLsmxT0mMwwNvUxGwsMm0bSDGGURCA8nxpKXhlcz7zbUsXNQmUlVVHoTEiNrG1rbshmZ5Fzn2RFmRxPECTSLmLpeQ8BNCaxbHLMJwTBJUnBuw8epQvc92GdCNj7E7FbROcR01+aXmrbRBNvO6fUe7qBkE4WfBlfj9Hl656WNfAVPna1bXtOQODd4HRTLH3FnuuVgzPEJfAfRY939H3UYw-V0b+hkXaNAALd8WHm873a0Fyw1+aY887I9pjglCDCGIx-F+dUoiMCPWej2OR1wMclOnCAU63TRHFmYJRCWW8-YcHPJlrXxjZlB7DrsuMy4TF83wXwG5uByEmt+IJOLao9M9sPjO2bFbulAtDRqkii8SL0JkePw7FB42CCJLd4cFNSGC-shVCdg-7qVwnja+BMFpjC9pYeBP87B8VvIJd4X03h6H3LKUacUgELX0AJboFZMp3jsqLEYEp14jCQmJcwpc4hAA */
   createMachine<ButterContext, ButterEvent>(
     {
-      context: { butterType: undefined, departement: undefined },
+      context: {
+        butterType: undefined,
+        departements: departements,
+        butters: [],
+      },
       predictableActionArguments: true,
-      initial: "loadingDepartements",
+      initial: "noDepartement",
       states: {
-        loadingDepartements: {
-          invoke: {
-            src: "fetchDepartements",
-            onDone: [
-              {
-                target: "departementsLoaded",
-                actions: assign({ departements: (ctx, evt) => evt.data }),
-              },
-            ],
-          },
-        },
-        departementsLoaded: {
+        noDepartement: {
           on: {
             departementSelected: {
               target: "butterSelection",
@@ -61,9 +61,9 @@ const butterMachine =
           type: "parallel",
           states: {
             butter: {
-              initial: "empty",
+              initial: "loadingButter",
               states: {
-                empty: {
+                noButterSelected: {
                   on: {
                     butterSelected: {
                       target: "done",
@@ -73,6 +73,17 @@ const butterMachine =
                 },
                 done: {
                   type: "final",
+                },
+                loadingButter: {
+                  invoke: {
+                    src: "fetchButters",
+                    onDone: [
+                      {
+                        target: "noButterSelected",
+                        actions: assign({ butters: (ctx, evt) => evt.data }),
+                      },
+                    ],
+                  },
                 },
               },
             },
@@ -145,19 +156,12 @@ const butterMachine =
     },
     {
       services: {
-        fetchDepartements: () =>
-          fetch("/api/departements", {
+        fetchButters: (ctx) =>
+          fetch(`/api/butters?departement=${ctx.departement}`, {
             headers: {
               "x-delay": DELAY,
             },
-          })
-            .then((resp) => resp.json())
-            .then((dpts) =>
-              dpts.sort(
-                (d1: Departement, d2: Departement) =>
-                  d1.numeroDepartement > d2.numeroDepartement
-              )
-            ),
+          }).then((resp) => resp.json()),
         submit: (context) => {
           return fetch("/api/answers", {
             method: "POST",
@@ -206,8 +210,6 @@ function App() {
   console.log(JSON.stringify(value));
   if (matches("submitted")) {
     return <div>Thank you !</div>;
-  } else if (matches("loadingDepartements")) {
-    return <Loader />;
   }
 
   return (
@@ -238,7 +240,7 @@ function App() {
         }}
       >
         <select
-          disabled={!matches("departementsLoaded")}
+          disabled={!matches("noDepartement")}
           onChange={(e) =>
             send({ type: "departementSelected", departement: e.target.value })
           }
@@ -246,7 +248,7 @@ function App() {
         >
           <>
             <option disabled value="default_value">
-              Select your city
+              Select your departement
             </option>
             {context.departements &&
               context.departements.map((p) => (
@@ -256,38 +258,39 @@ function App() {
               ))}
           </>
         </select>
-        {context.departement && (
-          <fieldset className="butters" disabled={!matches("butterSelection")}>
-            <legend>Favorite butter</legend>
-            <label className="radio-input">
-              <input
-                checked={context.butterType === ButterType.UNSALTED}
-                type="radio"
-                name="butter"
-                value="soft"
-                onChange={(e) =>
-                  send({ type: "butterSelected", butter: ButterType.UNSALTED })
-                }
-              />
-              Beurre doux
-            </label>
-            <label className="radio-input">
-              <input
-                checked={context.butterType === ButterType.SEMI_SALTED}
-                type="radio"
-                name="butter"
-                value="half-salted"
-                onChange={(e) =>
-                  send({
-                    type: "butterSelected",
-                    butter: ButterType.SEMI_SALTED,
-                  })
-                }
-              />
-              Beurre demi-sel
-            </label>
-          </fieldset>
-        )}
+        <>
+          {matches("butterSelection.butter.loadingButter") ? (
+            <Loader />
+          ) : (
+            context.departement && (
+              <fieldset
+                className="butters"
+                disabled={!matches("butterSelection")}
+              >
+                <legend>Favorite butter</legend>
+                {context.butters.map(({ id, name }) => {
+                  return (
+                    <label className="radio-input">
+                      <input
+                        checked={context.butterType === id}
+                        type="radio"
+                        name="butter"
+                        value="soft"
+                        onChange={(e) =>
+                          send({
+                            type: "butterSelected",
+                            butter: id,
+                          })
+                        }
+                      />
+                      {name}
+                    </label>
+                  );
+                })}
+              </fieldset>
+            )
+          )}
+        </>
         {matches("valid") && <input type="submit" value="Submit" />}
 
         {matches("submitting") && (

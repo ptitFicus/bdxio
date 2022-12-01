@@ -1,16 +1,29 @@
 const express = require("express");
 const fs = require("fs");
-const departements = require("./data");
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 
-app.get("/departements", (req, res) => {
+app.get("/butters", (req, res) => {
   const delay = req.header("x-delay");
-
-  setTimeout(() => res.json(departements), Number(delay) || 0);
+  const dpt = req.query.departement;
+  console.log("dpt", dpt);
+  setTimeout(() => {
+    if (["56", "29", "35", "22"].includes(dpt)) {
+      res.json([
+        { id: "UNSALTED", name: "Beurre doux" },
+        { id: "SALTED", name: "Beurre salé" },
+        { id: "SEMI_SALTED", name: "Beurre demi-sel" },
+      ]);
+    } else {
+      res.json([
+        { id: "UNSALTED", name: "Beurre doux" },
+        { id: "SEMI_SALTED", name: "Beurre demi-sel" },
+      ]);
+    }
+  }, Number(delay) || 0);
 });
 
 app.post("/answers", (req, res) => {
