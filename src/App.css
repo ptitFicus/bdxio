@@ -1,29 +1,90 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.butters {
+.talk-form {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.butters legend {
-  font-weight: 600;
+.talk-form > label,
+.talk-form > fieldset {
+  width: 500px;
 }
 
-form {
+.talk-form > fieldset label {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.talk-form > label,
+.talk-form legend {
+  font-weight: bold;
+}
+
+.talk-form label:not(.radio-input),
+.talk-form fieldset {
   display: flex;
   flex-direction: column;
+  margin-bottom: 20px;
+  margin-top: 20px;
 }
 
-form input[type="submit"] {
-  max-width: 75px;
+dialog {
+  width: 500px;
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+dialog form {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  margin-top: 10px;
+}
+
+.talk-form input[type="submit"],
+.talk-form .loader-container {
   align-self: flex-end;
+  font-size: 1.1em;
+  margin-top: 8px;
 }
 
-form > * {
+.error {
+  font-weight: bold;
+  color: red;
+}
+
+.info {
+  font-weight: bold;
+  color: green;
+}
+
+.lds-dual-ring {
+  display: inline-block;
+  width: 45px;
+  height: 45px;
+}
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 16px;
+  height: 16px;
   margin: 8px;
+  border-radius: 50%;
+  border: 3px solid #000;
+  border-color: #000 transparent #000 transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.source {
+  font-style: italic;
 }

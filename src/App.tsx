@@ -1,58 +1,61 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import "./App.css";
-import { createMachine } from "xstate";
+import { assign, createMachine } from "xstate";
 import { useMachine } from "@xstate/react";
 
+enum ButterType {
+  UNSALTED = "UNSALTED",
+  SEMI_SALTED = "SEMI_SALTED",
+}
+
+interface Departement {
+  numeroDepartement: string;
+  numeroRegion: number;
+  nom: string;
+}
+
+interface ButterContext {
+  departements?: Departement[];
+  departement?: string;
+  butterType?: ButterType;
+  error?: string;
+}
+
+type ButterEvent =
+  | { type: "submit" }
+  | { type: "locationSelected"; departement: string }
+  | { type: "informationClosed" }
+  | { type: "butterSelected"; butter: ButterType };
+
 const butterMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QCMCuAXdYBOA6AlgHYBuAhgDb4S7kD2AxqevrYTbaREVADINMtCsAMQRWYAiVoBrCWkw5JZStTqNmrdp2591g2AiLF+GwgG0ADAF1EoAA61Y+U7ZAAPRAEYALLgBsAKwBAMx+ft7ewd4BAEzegQA0IACeiADsuDEAnJ6hOWkWwRZhwZ4AvmVJ8lh4RhRUouK4sOhMchg1SvUQrg5OLkjuiAC0ngAcY7hpnmklxVnenoEBSakIMTHBuBYRfmkxfmN+wQHRARVVHYrKDbCoyAC2zr2OzoKuHghjW36eseElTwbWarRAHSYRYIxCwWXLZGF+C4gaqKO6PZzMQhQRqECRGGTtBR4NFPTDcQxSPSsSw2QZ9N6sD4jTz+ManAJ+LIxMbRYJZCwxFYpRDBArbSKRNkxcaLNJIlHE+6kzHYnDYWh4OzkJgAMw1D1wCuaSox5PxVPM1he-Xeg0+0L8uCyOWOfMKFi5UNBCGC31wYxiaTGzr23n2fO88queDVGuEbhabVwpB1NQAFAEYRYAJTCI2x7DWhmEJkIUZFcW+74OoJ-b2xGK4bwTIqefkermIyrI6PCWBgchgejoABC0aLA1AnyykzZATbWTSAWd84W3uG8R+UUzme8COXXcuRL7A6H6F0AkZdNek6GPr+U19aTSwROQQsaSy67Svi5POXko8tMwQVN2hC0BAcCuEadQqIa0YACrJHYEjgWORITraU4jH6fiBr8i6cscwbrtKATbDMi7SrMISZnK3YwSQ3TwUSSEoSxNQAMqnsOkCYVe2EILETrEQEwaBp4ApZMEpEPrCn4hBYQRxEEUZEl0cEKmxYD8SWdrMh+-j4W2sxZMRX7CmW3IZPJi5QmGUIvmpnSwVQ7AWloXBYhepjwNeNoCXewzAo+QZZOyEy-CRlmjBYuDjGJ0xBnysQWGMzmKK5qgmII7mXoQACCZD4NqyCDn59g3lhd5xPFCzRG2gTNpmRzevymTHEGYxLK+0QTBltRMXBaj5XlpjcYOvE9P5xaltZToHNye7HJEsJ+N6cWfrkpzNX8eEEQNGluSNt70renzBfOoXBhFRzjBZazDAG8Vsmyoq9acTkMdGR3TZVAV6YJwVLtd4V9XdD0jCcWQUZ+P6lN1bbnN96k3H9IBndVF2CrgIS+iEcQTLsQprItTaREs4mchySmHSSppYrpc0zP4H7fHh0yJYK3qChkq2dcuRwnCBKOdPTCjo5jgXY06z7xMCPiwsU62WREGQbPOEQIoKYmHQWTP6QgSx882fgCsGfzFDE3pq5kgo+HuVtBOlos4AbQPZDDL5hbdBHrp9-jbsUniSa9MSgWUQA */
-  createMachine(
+  /** @xstate-layout N4IgpgJg5mDOIC5QCMCuAXdYBOBiANgPYDGAhugJaEB2AymPmMVhANoAMAuoqAA6GwKlGjxAAPRAEZJAdhkA6AKwAmRZOUBmSe3YyAbBo0AaEAE9EymeyV7JKvZoAs7Q3scBfdybSYcBEuRUdAxMLKyS3Egg-ILC1KISCHZq8gCcuo6pjooayg52JuYIiiVphjIajsrqKop6nt4YWHg+zfSMzJAckXwCQkEJUtp68o4ykraaqTlqxmZSABwa8rKZenqpC5apch5eIK048hTUAG6k+BQQuBA0YPKw6OT3h9jHZxdX3aIx-SJRiTsMkUowWmx0blkqTmRWcI3YjnUlXYC0UVhR9X2r3e50uEHkRDIcQJhFIEBOUAAMgE4rAbnccYQANYvJpHE64q4kolBElkinUnk0WAIDk0oLdb5RX5xQYIPQuNILFEaaZVSpuQqIBwg9ipfV6GTKaaQ1INA5st4cz74wmBGjvABmhGwAFt7dQACIUWC8fCkUyQXAnZ1uj0AYSIsC6XB+fVlAKkxpG1RU1SyygWiK1xXYIKyLg0KjB6iWMnN2OtePk2PQ2FI1EEYGo6FwUt6sQGiYQFVSaRkWcUWQHyskjhzml1KhRW0RS1RGgrlpxNpry7rDabLbbETjnf+oESMkcy1k6x2RczuVSObHfbG6U2yoVbjkS98b0511gqGQrqE7bRPGXaHog6SSGkdSqkOWQ1DCiDKss9iQlUxrSHsjQfg8v7-pgFL0tQ9xiiya5YT+f5CJQ1BQKKZzijQkqxtKwEHuIiCOAsIzQlU2QOOsDjsHoOY7NY0yWOw0hDkOgnvs02EUXh1G4Dg2AuvIfrkKGrqkXJ5G4VRNFikK1CMT0QH7vE3ZosoozrOoqTVMCkiVDmSzWAYlTbHqCwyNCslHCpLq4GIjzPPIpCOs0AAUig6OwACUuDYoF2CATKIFsT2zlKEWRbpGMihLJIrmpCM-FVBUA7sMoyh7Ps1CEBAcCiK8e5-JZoEICeCxlDxdR5OsyiCTmAC00gKNOYLjM4GgIo4mKYXJVZXG1CadbFCjgksapOJq8wICNmZKENYJZqkdhjka-lWh81Z2mt5ntXKJT5sq22KOq83jvtRYQfojiIhxeiFcDkjXSud30dQfLktRgoevAzEWXKOryFmGjrJxkg7OdMg5rFCzg8ttpQ9yHoAILnBQ-rIIwiMdk93aovmmbGlmzhLBoeP7ajer6vNqqcQ5yhE7dXL3byIYuu6cTer6-qBhAq0ZYCY7wi43lqJkH3KDmAPWP9J4aKiIkGKLX5k8StyEcrrGAte8g6FU52WAYmT4xs8gbGObNWHYGzm6urVI4z616D10wY5xhhc4Yus89YD7aBJ1nAtVgfVrW9aNhQzboLbHWZbYXE5OHHmx7kE65I7k0uNZElmliy7EzpRwNQAQpaBdyrB8jAqVeoVGCJ43vtdg2UaFSIi9sXTITTdYS32KvO0oSQN33bndYlRVG4KLDPHRSaDZebVBJqjTxM4NfhvnXnSXs3SHPqbCYqWYYpIPkIgqYML7pOGUQpLfTKaI+zQkMM+Gq4lR5FCNCMBY2MtDA1qmCY04M9KUXXiHB6R5dB90qLIBYyo0S2G+kUaYfYcgIlOrYLWihwYpWAYkUhjsao7CWJMfQh8wJv2cOkDGbg8q-08EAA */
+  createMachine<ButterContext, ButterEvent>(
     {
+      context: { butterType: undefined, departement: undefined },
       predictableActionArguments: true,
-      context: {
-        butterType: "",
-        location: "",
-      },
       on: {
-        selectButter: [
+        locationSelected: [
           {
-            cond: "isComplete",
-            target: [
-              ".invalid.butterType.butterSelected",
-              ".invalid.location.locationSelected",
-            ],
+            target: ".invalid.location.informationDisplayed",
+            cond: "outsideBrittany",
+            actions: assign({ departement: (__, evt) => evt.departement }),
           },
           {
-            target: ".invalid.butterType.butterSelected",
-          },
-        ],
-        selectLocation: [
-          {
-            cond: "isComplete",
-            target: [
-              ".invalid.butterType.butterSelected",
-              ".invalid.location.locationSelected",
-            ],
-          },
-          {
-            target: ".invalid.location.locationSelected",
+            target: ".invalid.location.done",
+            actions: assign({ departement: (__, evt) => evt.departement }),
           },
         ],
+        butterSelected: {
+          target: ".invalid.butter.butterSelected",
+          actions: assign({ butterType: (__, evt) => evt.butter }),
+        },
       },
       initial: "invalid",
       states: {
         invalid: {
           type: "parallel",
           states: {
-            butterType: {
-              initial: "noButter",
-              states: {
-                noButter: {},
-                butterSelected: {
-                  type: "final",
-                },
-              },
-            },
             location: {
               initial: "loadingLocations",
               states: {
@@ -62,12 +65,42 @@ const butterMachine =
                     onDone: [
                       {
                         target: "locationAvailables",
+                        actions: assign({
+                          departements: (ctx, evt) => evt.data,
+                        }),
                       },
                     ],
                   },
                 },
                 locationAvailables: {},
-                locationSelected: {
+                informationDisplayed: {
+                  on: {
+                    informationClosed: {
+                      target: "done",
+                    },
+                  },
+                },
+                done: {
+                  type: "final",
+                },
+              },
+            },
+            butter: {
+              initial: "transient",
+              states: {
+                transient: {
+                  always: [
+                    {
+                      target: "butterSelected",
+                      cond: "butterPresent",
+                    },
+                    {
+                      target: "noButter",
+                    },
+                  ],
+                },
+                noButter: {},
+                butterSelected: {
                   type: "final",
                 },
               },
@@ -103,7 +136,9 @@ const butterMachine =
         error: {
           after: {
             "5000": {
-              target: "valid",
+              target: "#butter.valid",
+              actions: [],
+              internal: false,
             },
           },
         },
@@ -113,76 +148,126 @@ const butterMachine =
     {
       services: {
         fetchLocations: () =>
-          new Promise((resolve) => {
-            setTimeout(
-              () => resolve(["France", "Belgique", "Allemagne"]),
-              3000
-            );
-          }),
-        submit: (context) =>
-          new Promise((resolve, reject) => {
-            setTimeout(
-              () => resolve(["France", "Belgique", "Allemagne"]),
-              3000
-            );
-          }),
+          fetch("/api/departements")
+            .then((resp) => resp.json())
+            .then((dpts) =>
+              dpts.sort(
+                (d1: Departement, d2: Departement) =>
+                  d1.numeroDepartement > d2.numeroDepartement
+              )
+            ),
+        submit: (context) => {
+          return Promise.resolve(1);
+        },
       },
       guards: {
-        isComplete: (_, __, { state }) => !state.matches("invalid"),
+        outsideBrittany: (context) => {
+          return !["22", "56", "35", "29"].includes(context.departement || "");
+        },
+        butterPresent: (ctx) => Boolean(ctx.butterType),
       },
     }
   );
 
 function App() {
-  const [{ context, value, matches }, send] = useMachine(butterMachine);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const [{ context, value, matches }, send, service] =
+    useMachine(butterMachine);
+
+  service.subscribe((state) => {
+    if (
+      state.matches("invalid.location.informationDisplayed") &&
+      !dialogRef.current?.open
+    ) {
+      dialogRef.current?.showModal();
+    }
+  });
+
   console.log(JSON.stringify(value));
   return (
-    <form onSubmit={(e) => e.preventDefault()}>
-      <fieldset className="butters">
-        <legend>Favorite butter</legend>
-        <label>
-          <input
-            type="radio"
-            name="butter"
-            value="soft"
-            onChange={(e) =>
-              send({ type: "selectButter", butter: e.target.value })
-            }
-          />
-          Beurre doux
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="butter"
-            value="half-salted"
-            onChange={(e) =>
-              send({ type: "selectButter", butter: e.target.value })
-            }
-          />
-          Beurre demi-sel
-        </label>
-      </fieldset>
-      <select
-        onChange={(e) =>
-          send({ type: "selectLocation", location: e.target.value })
-        }
-        defaultValue="default_value"
+    <>
+      <dialog ref={dialogRef}>
+        <h3>About semi-salted butter</h3>
+        Semi-salted butter is butter with some salt in it, but not enough to
+        meet the legal definition of salted. In France, it means .5 to 3% of
+        salt has been added. In America and South Africa, it means the butter is
+        1% salt.
+        <br />
+        <br />
+        <span className="source">
+          Source:{" "}
+          <a href="https://www.cooksinfo.com/semi-salted-butter">
+            https://www.cooksinfo.com
+          </a>
+        </span>
+        <form method="dialog" onSubmit={(e) => send("informationClosed")}>
+          <input type="submit" value="Understood" />
+        </form>
+      </dialog>
+      <form
+        className="talk-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          send("submit");
+        }}
       >
-        <>
-          <option disabled value="default_value">
-            Select a city
-          </option>
-          {["Pays1", "Pays2"].map((p) => (
-            <option value={p} key={p}>
-              {p}
+        <fieldset className="butters">
+          <legend>Favorite butter</legend>
+          <label className="radio-input">
+            <input
+              type="radio"
+              name="butter"
+              value="soft"
+              onChange={(e) =>
+                send({ type: "butterSelected", butter: ButterType.UNSALTED })
+              }
+            />
+            Beurre doux
+          </label>
+          <label className="radio-input">
+            <input
+              type="radio"
+              name="butter"
+              value="half-salted"
+              onChange={(e) =>
+                send({ type: "butterSelected", butter: ButterType.SEMI_SALTED })
+              }
+            />
+            Beurre demi-sel
+          </label>
+        </fieldset>
+        <select
+          onChange={(e) =>
+            send({ type: "locationSelected", departement: e.target.value })
+          }
+          defaultValue="default_value"
+        >
+          <>
+            <option disabled value="default_value">
+              Select a city
             </option>
-          ))}
-        </>
-      </select>
-      <input type="submit" value="Submit" disabled={matches("invalid")} />
-    </form>
+            {context.departements &&
+              context.departements.map((p) => (
+                <option value={p.numeroDepartement} key={p.numeroDepartement}>
+                  {p.nom}({p.numeroDepartement})
+                </option>
+              ))}
+          </>
+        </select>
+        {matches("submitting") ? (
+          <div className="loader-container">
+            <Loader />
+          </div>
+        ) : (
+          <input type="submit" value="Submit" disabled={!matches("valid")} />
+        )}
+      </form>
+    </>
   );
 }
 
 export default App;
+
+function Loader() {
+  return <div className="lds-dual-ring"></div>;
+}
