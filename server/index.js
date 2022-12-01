@@ -13,8 +13,8 @@ app.get("/butters", (req, res) => {
     if (["56", "29", "35", "22"].includes(dpt)) {
       res.json([
         { id: "UNSALTED", name: "Beurre doux" },
-        { id: "SALTED", name: "Beurre salé" },
         { id: "SEMI_SALTED", name: "Beurre demi-sel" },
+        { id: "SALTED", name: "Beurre salé" },
       ]);
     } else {
       res.json([
