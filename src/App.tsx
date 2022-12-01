@@ -1,15 +1,8 @@
-import { useRef, useState } from "react";
-import reactLogo from "./assets/react.svg";
+import { useRef } from "react";
 import "./App.css";
 import { assign, createMachine } from "xstate";
 import { useMachine } from "@xstate/react";
 import { departements } from "./data";
-
-enum ButterType {
-  UNSALTED = "UNSALTED",
-  SEMI_SALTED = "SEMI_SALTED",
-  SALTED = "SALTED",
-}
 
 export interface Departement {
   numeroDepartement: string;
