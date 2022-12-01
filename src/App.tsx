@@ -31,7 +31,7 @@ type ButterEvent =
   | { type: "butterSelected"; butter: ButterType };
 
 const butterMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QCMCuAXdYBOA6ANgPYCGEAlgHZQAiYADsdlgLZgXqwDEEhFYulAG6EA1vzSYcBEuSq0GTMK3awEQwgGNi6MrwDaABgC6ho4lB1CsMjt7mQAD0QBmAOy5Xn5wBY3AVgAaEABPRAAmMIA2XG8DAE4ARlc4yIAOVz8AX0ygiSw8CHpGFjYOABkZSG4ixWV0AGUwfDANLAhTe0trWwp7JwQ-ONwE5zDUhLDAkMRvWNxU7z9UyYS4v2cJrJyQPKld7Ebm1t0KTn3DlraOpBAumxO+xESY1LWDVfXNoNCESNdo9apSIpMZxAyRSbZXIYfK4QTEfBkCCcWCoZDMGzXCxWe52G79CYGXBxZzpMIGVwGDaTb5PAzeYl-SJ+EZ-BLpLbQyR4VHomw6KjcXj8dRiXD7XC8jGYShQNQUYRaHqmLG3HE9R4IOKpXD02J-UljL7TBAJVm4cnjMLa5ZWzk7GFSKX82WcHDYQh4Oj4bQAM09zHFjp5aOlArl6iVJxVxk66oe+JcYXcFPp6zB9LcnlpWriYQtzjSCUi+sh2wl7s9nAcsHQ2n4xF9+QAFM4DO2AJRnYO4SvYVV3DWJhA+BK4dPk5wZ3yeVw5kvODzOPzvPzAvwRZPZbYUQiFeA3fZx7oJ0D9AC0CSJm+ZEKmP3PkShDu50lIsvkxSUpQP2JPeLPGYwhzVJnGfCVCgUEoVAqUhIGPXFemHYFxzibw4kpSlqXvFxIjHQYDHJOIUnifxwJ7c4mkuU81X-JDAIQTwYlcDkMNvGkTSWMc8M8DDUhZNcyy5WF4URCAEKHBiJkXMI228NIMhApJdSWHwSJJDJyNfZ0ZSoCSaP6VIdWtbx2TQz4OJ+Yix1cEY3FecEhJfWEdLafSAMcRAJgZYjmWWKljR+CZrQ8NJUkIksxgiMDyx7Pt3PozyR0iRdlySKlpyzOcTVcbx3DzV4lleKLZO3TIgA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QCMCuAXdYBOA6ANgPYCGEAlgHZQAiYADsdlgLZgXqwDEEhFYulAG6EA1vzSYcBEuSq0GTMK3awEQwgGNi6MrwDaABgC6ho4lB1CsMjt7mQAD0QBmAOy5Xn5wBY3AVgAaEABPRAAmMIA2XG8DAE4ARlc4yIAOVz8AX0ygiSw8CHpGFjYOABkZSG4ixWV0AGUwfDANLAhTe0trWwp7JwQAWmcw1Nw-Az8UyITUyL8wn28g0IRnGdwE6ciwhMSk7z8-SOzcjHzcPJxG5tbdCguzqSU6dGDOS+xrlraOpBAumx3PqIAYjZwxPyuabeMLzTxxJYhRCQuK4KbxebeSKubyJE4gD64QTEfBkCCcWCoZDMGy-CxWQF2P79UEGcFRHFQ8ZhXEGRErBJhAzuHFzVJCtaw-GEynUmw6KjcXj8dRiB6SPCymmYShQNQUYRaHqmOn-Bk9YEIOKjCYGMJxe1pDLLRAJBJ+by4VJ+GYGSKRWLbLI5AmPTVU7UKqCcHDYQh4Oj4bQAM3jzHV5y18t1+sN2juJuMnXNQOZLjC7mFfL8zjiBj5bk8LqtDtwCzSm0DUpDhNj8c4Dlg6G0-GIyfyAApnPWDABKd5h3B97CmgEWsurbwJMa1iV1hueVzNgPg1zOcbuyJxeYRVzSxcfL63XgCCip7DMfMv9DYYgUaylJwq4lkyoAsv4XqpPEnipFuCQ+O6zapHWHjeKk8FHIc9apPeGoZlcTTfHcr7vp+PS4D+f4AewQEJGYfxrqWYEgs4-obGe8RCtaCL+oESJWuhGzxO6sx8hEaS4ecj6Ec+9yUKRX73OQsCJsQwRVPJaaKQAwkQsCQMB3RMY4IIJFuYy+tsUFCq4mx8SsexehWGQIWs1oJJJUjSTcPRKnwuBDiO+F4N5RH6EWDEgb0G4DAcowVluiTpDyPphM2bqzGMPpxMkNYRIKzjZCGFCEIU8B-B8xZGaBJmDHMBgbAGiTOM4qRQZxzYDH4aJxL11pbuhrizAlnl4EQpC6vIxRKKU5X0tV0XMQgMJIYVPaLoUCglCoFSkJAVWMottU4rg2wHG6tnpLiOXNj4DWtehsFwTihzHOteGhbJB3rktAyRHajW4vBD31g6zaxOC6LWi1wz2uko1EiSZLfcZ4ETLgbizLsqStZMHr2a6QrRL1YoSoKwanHhWY6lQKM1Sy3pjDlFbcrMrVpOlMzgripNsuTCPU20dNHf0gqeiTfjinzsLpREqJQm1doBiMERrZT5zLsLlqseC55JGy+6+IezacmiIzXm1DrigsCOfeRlWRQtlpdZsaJocrBiwehwrg4kaL+vE2LIdxFOhh9YZPvbi7PK8WsxViowIrMMKe2hCQ+-xkSsWM7XeJ4GKh4SdvEYSPB8HHv042MvjTlCgrut4-KIP9YQbA6cyeFiOJ4u9UkRzJ5GaR+ikV7VXUeoDzUgx1-Fcl6kLQmztbnrb-c+cRQ9kcRlH-mQpSjyy4zRJ2U+K8JBNWr4aIZLsdaJHfHm915a9hXJb5aeRAAWZKFEdjH06ZP0Xo-Q+lxOMcYiQL7pyAfWYYZkIjDSGqvDUkcN7v2HuRZSql1IQAPqZLEGxYTek9mfSBSEazzzru7FqcQV5FSAA */
   createMachine<ButterContext, ButterEvent>(
     {
       context: { butterType: undefined, departement: undefined },
@@ -58,11 +58,53 @@ const butterMachine =
           },
         },
         butterSelection: {
-          on: {
-            butterSelected: {
-              target: "valid",
-              actions: assign({ butterType: (ctx, evt) => evt.butter }),
+          type: "parallel",
+          states: {
+            butter: {
+              initial: "empty",
+              states: {
+                empty: {
+                  on: {
+                    butterSelected: {
+                      target: "done",
+                      actions: assign({ butterType: (ctx, evt) => evt.butter }),
+                    },
+                  },
+                },
+                done: {
+                  type: "final",
+                },
+              },
             },
+            information: {
+              initial: "transient",
+              states: {
+                transient: {
+                  always: [
+                    {
+                      target: "displayed",
+                      cond: "outsideBrittany",
+                    },
+                    {
+                      target: "hidden",
+                    },
+                  ],
+                },
+                hidden: {
+                  type: "final",
+                },
+                displayed: {
+                  on: {
+                    informationClosed: {
+                      target: "hidden",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          onDone: {
+            target: "valid",
           },
         },
         valid: {
@@ -138,7 +180,11 @@ const butterMachine =
           });
         },
       },
-      guards: {},
+      guards: {
+        outsideBrittany: (context) => {
+          return !["22", "56", "35", "29"].includes(context.departement || "");
+        },
+      },
     }
   );
 
