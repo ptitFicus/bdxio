@@ -153,7 +153,13 @@ function App() {
             )
           )}
         </>
-        {matches("valid") && <input type="submit" value="Submit" />}
+        {["valid", "submitting"].some(matches) && (
+          <input
+            type="submit"
+            value="Submit"
+            disabled={matches("submitting")}
+          />
+        )}
 
         {matches("submitting") && (
           <div className="loader-container">
