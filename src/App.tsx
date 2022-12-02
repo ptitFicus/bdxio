@@ -37,153 +37,16 @@ const butterMachine =
       context: {
         butterType: undefined,
         departements: departements,
+        departement: undefined,
         butters: [],
+        error: undefined,
       },
       predictableActionArguments: true,
-      initial: "noDepartement",
-      states: {
-        noDepartement: {
-          on: {
-            departementSelected: {
-              target: "butterSelection",
-              actions: assign({ departement: (ctx, evt) => evt.departement }),
-            },
-          },
-        },
-        valid: {
-          on: {
-            submit: {
-              target: "submitting",
-            },
-          },
-        },
-        submitting: {
-          invoke: {
-            src: "submit",
-            onDone: [
-              {
-                target: "submitted",
-              },
-            ],
-            onError: [
-              {
-                target: "error",
-                actions: assign({ error: (ctx, evt) => evt.data.message }),
-              },
-            ],
-          },
-        },
-        submitted: {
-          type: "final",
-        },
-        error: {
-          after: {
-            "3000": {
-              target: "#butter.butterSelection.butter.noButter",
-              actions: [],
-              internal: false,
-            },
-          },
-        },
-        butterSelection: {
-          type: "parallel",
-          states: {
-            butter: {
-              initial: "loadingButter",
-              states: {
-                loadingButter: {
-                  invoke: {
-                    src: "fetchButters",
-                    onDone: [
-                      {
-                        target: "noButter",
-                        actions: assign({ butters: (ctx, evt) => evt.data }),
-                      },
-                    ],
-                  },
-                },
-                noButter: {
-                  on: {
-                    butterSelected: {
-                      target: "done",
-                      actions: assign({ butterType: (ctx, evt) => evt.butter }),
-                    },
-                  },
-                },
-                done: {
-                  type: "final",
-                },
-              },
-            },
-            information: {
-              initial: "transient",
-              states: {
-                transient: {
-                  always: [
-                    {
-                      target: "visible",
-                      cond: "outsideBrittany",
-                    },
-                    {
-                      target: "hidden",
-                    },
-                  ],
-                },
-                visible: {
-                  on: {
-                    informationClosed: {
-                      target: "hidden",
-                    },
-                  },
-                },
-                hidden: {
-                  type: "final",
-                },
-              },
-            },
-          },
-          onDone: {
-            target: "valid",
-          },
-        },
-      },
       id: "butter",
     },
     {
-      services: {
-        fetchButters: (ctx) =>
-          fetch(`/api/butters?departement=${ctx.departement}`, {
-            headers: {
-              "x-delay": DELAY,
-            },
-          }).then((resp) => resp.json()),
-        submit: (context) => {
-          return fetch("/api/answers", {
-            method: "POST",
-            body: JSON.stringify({
-              departement: context.departement,
-              butter: context.butterType,
-            }),
-            headers: {
-              "Content-Type": "application/json",
-              "x-delay": DELAY,
-            },
-          }).then((response) => {
-            if (response.status >= 400) {
-              return response.json().then((err) => {
-                throw new Error(err.message);
-              });
-            } else {
-              return {};
-            }
-          });
-        },
-      },
-      guards: {
-        outsideBrittany: (context) => {
-          return !["22", "56", "35", "29"].includes(context.departement || "");
-        },
-      },
+      services: {},
+      guards: {},
     }
   );
 
